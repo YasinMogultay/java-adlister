@@ -3,14 +3,14 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-@WebServlet("/hello-world")
+@WebServlet("/hello")
 public class HelloWorldServlet extends HttpServlet {
 
     int hitCount;
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         hitCount++;
+        response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         String text = "";
         text += "<h2>Count the hits</h2>";
@@ -20,9 +20,15 @@ public class HelloWorldServlet extends HttpServlet {
         text += "<button>Submit</button>";
         text += "</form>";
         out.println(text);
+        String thingToBeGreeted = request.getParameter("name");
+        if (thingToBeGreeted.equalsIgnoreCase("codeup")){
+            String output = String.format("<h1>Hello, %s</h1>", thingToBeGreeted);
+            out.println(output);
+        } else {
+            String output = String.format("<h1>Hello, %s</h1>", "World");
+            out.println(output);
+        }
 
-        response.setContentType("text/html");
-        out.println("<h1>Hello, World!</h1>");
     }
 
     @Override
