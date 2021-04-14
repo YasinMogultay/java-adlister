@@ -21,5 +21,14 @@ public class LoginServlet extends HttpServlet {
         } else {
             response.sendRedirect("/login");
         }
+
+        boolean unValidAttempt = username.equals("user") && password.equals("password");
+
+        if (unValidAttempt) {
+            response.sendRedirect("/login");
+        } else {
+            response.sendRedirect("/profile");
+        }
+
     }
 }
