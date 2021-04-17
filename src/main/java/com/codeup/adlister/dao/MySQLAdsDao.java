@@ -18,7 +18,7 @@ public class MySQLAdsDao implements Ads {
             DriverManager.registerDriver(new Driver());
             connection = DriverManager.getConnection(
                 config.getUrl(),
-                config.getUser(),
+                config.getUsername(),
                 config.getPassword()
             );
         } catch (SQLException e) {
@@ -28,14 +28,22 @@ public class MySQLAdsDao implements Ads {
 
     @Override
     public List<Ad> all() {
-        Statement stmt = null;
+        List<Ad> ads = new ArrayList<>();
+        PreparedStatement stmt = null;
         try {
-            stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM ads");
-            return createAdsFromResults(rs);
+            String sql = "SELECT * FROM ads";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ads.add(new Ad(rs.getLong("id"),
+                        rs.getLong("user_id"),
+                        rs.getString("title"),
+                        rs.getString("description")));
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving all ads.", e);
         }
+        return ads;
     }
 
     @Override
@@ -51,7 +59,16 @@ public class MySQLAdsDao implements Ads {
         }
     }
 
-    private String createInsertQuery(Ad ad) {
+    private String createInsertQuery(Ad ad) throws SQLException {
+//        String insertQuery = String.format("INSERT INTO ads(user_id, title, description) VALUES (? ? ?)");
+//
+//        PreparedStatement ps = connection.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS);
+//        ps.setLong(1, ad.getUserId());
+//        ps.setString(2, ad.getTitle());
+//        ps.setString(3, ad.getDescription());
+//
+//         return ;
+
         return "INSERT INTO ads(user_id, title, description) VALUES "
             + "(" + ad.getUserId() + ", "
             + "'" + ad.getTitle() +"', "
